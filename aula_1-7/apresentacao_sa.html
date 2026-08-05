@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Forge Studios - Aetheria Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;600;900&display=swap');
+        
+        body {
+            margin: 0;
+            background-color: #0d1117; 
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #30363d;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #58a6ff;
+            font-size: 4rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
+            letter-spacing: -2px;
+        }
+
+        h2 {
+            color: #8b949e;
+            font-weight: 300;
+            font-size: 2rem;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: #3fb950;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 800px;
+            color: #c9d1d9;
+        }
+
+        .box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: left;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .box:hover {
+            border-color: #ff7b72;
+            box-shadow: 0 10px 40px rgba(255, 123, 114, 0.2);
+            transform: translateY(-5px);
+        }
+
+        ul {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #c9d1d9;
+            list-style-type: square;
+        }
+
+        li span { color: #ff7b72; font-weight: bold; }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: rgba(48, 54, 61, 0.7);
+            border: 1px solid #8b949e;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #ff7b72; color: #fff; border-color: #ff7b72; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide">
+        <h2 class="fade-in">Bem-vindos à</h2>
+        <h1 class="fade-in">Pixel Forge Studios</h1>
+        <p class="fade-in">A mais renomada consultoria de engenharia de software para games.</p>
+        <p class="fade-in" style="margin-top: 50px; color: #8b949e;">Use as setas do teclado &darr; &uarr; para navegar</p>
+    </div>
+
+    <!-- Slide 2: O Cliente -->
+    <div class="slide">
+        <h3 class="fade-in">O Cliente: ArenaCraft</h3>
+        <p class="fade-in">A ArenaCraft é uma plataforma competitiva (eSports) em ascensão que hospeda torneios de MMORPGs, gerencia <i>matchmaking</i> e mantém os rankings oficiais de milhares de jogadores.</p>
+        <div class="box fade-in">
+            <h4 style="color: #58a6ff; margin-top: 0;">O Problema</h4>
+            <p style="font-size: 1.1rem;">O aplicativo e o jogo 3D (Front-End) estão prontos. O Banco de Dados também. Porém, a ArenaCraft precisa de uma "ponte" segura para calcular os pontos das partidas antes de gravá-los. Se o próprio jogo calcular os pontos, hackers usarão <i>Cheat Engine</i> para falsificar vitórias.</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: A Missão -->
+    <div class="slide">
+        <h1 class="fade-in">Aetheria Engine API</h1>
+        <p class="fade-in">Vocês foram contratados como <b>Desenvolvedores Back-End Júnior</b>.</p>
+        <div class="box fade-in">
+            <h4 style="color: #3fb950; margin-top: 0;">Sua Missão</h4>
+            <ul>
+                <li>Construir a API Core do jogo usando <span>TypeScript</span> e <span>Node.js</span>.</li>
+                <li>Criar o "motor lógico" que recebe resultados e calcula o <span>Ranking/ELO</span>.</li>
+                <li>Proteger regras matemáticas para que o HP/XP nunca seja manipulado indevidamente (Encapsulamento).</li>
+                <li>Disponibilizar os dados para o site exibir o "Top 100" (Leaderboards) via rotas <span>HTTP (JSON)</span>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 4: As 4 Fases do Projeto -->
+    <div class="slide">
+        <h3 class="fade-in">Como vamos construir isso? (Julho a Dezembro)</h3>
+        <p class="fade-in">O desenvolvimento ocorrerá em 4 Fases incrementais.</p>
+        <div class="box fade-in">
+            <ul>
+                <li><span>Fase 1 (POO):</span> Cérebro do Jogo. Sem internet ainda. Foco em algoritmos lógicos e criação das Classes de Herança na memória.</li>
+                <li><span>Fase 2 (Node.js & JSON):</span> Instalação do ambiente de servidor e conversão dos objetos da memória para o formato universal JSON.</li>
+                <li><span>Fase 3 (Arena Web):</span> Criação das rotas HTTP (EndPoints). A porta de entrada da API para verbos GET, POST, PUT e DELETE.</li>
+                <li><span>Fase 4 (Projeto Final):</span> Refatoração de todo o código para a Arquitetura MVC (Model-View-Controller) com tratamento rigoroso de status HTTP.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: Entregáveis -->
+    <div class="slide">
+        <h1 class="fade-in">O que vocês entregarão?</h1>
+        <p class="fade-in">Ao final do semestre, o grupo será avaliado pelo seguinte "Dossiê":</p>
+        <div class="box fade-in">
+            <h4 style="color: #58a6ff; margin-top: 0;">Entregas Oficiais:</h4>
+            <ol style="font-size: 1.2rem; line-height: 1.8; color: #c9d1d9;">
+                <li><b>Repositório Back-End:</b> Código limpo hospedado no GitHub, operando lógicas em memória e padronizado em pastas MVC.</li>
+                <li><b>Tratamento de Dados:</b> Lógicas de proteção (Guard Clauses) para impedir dados inválidos de entrarem nas rotas.</li>
+                <li><b>Dossiê da API:</b> Um arquivo Collection exportado do <i>Postman</i> ou <i>Insomnia</i> com todas as requisições catalogadas para o Front-End consumir.</li>
+            </ol>
+        </div>
+        <p class="fade-in" style="margin-top: 40px; color: #3fb950; font-weight: bold; font-size: 1.5rem;">Preparem seus teclados. O jogo começou!</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="prevBtn">&uarr; Anterior</button>
+        <button class="btn" id="nextBtn">Próximo &darr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                scrollToSlide(currentSlide + 1);
+            } else if(e.key === 'ArrowUp') {
+                e.preventDefault();
+                scrollToSlide(currentSlide - 1);
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

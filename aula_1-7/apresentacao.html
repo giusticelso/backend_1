@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheria Engine: O Ecossistema Back-End</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;600;900&display=swap');
+        
+        body {
+            margin: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column; 
+            overflow-x: hidden;
+            overflow-y: hidden; /* JavaScript will handle scrolling */
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #30363d;
+            position: relative;
+        }
+
+        h1 {
+            color: #58a6ff;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #8b949e;
+            font-weight: 300;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .code-block {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .code-block:hover {
+            box-shadow: 0 10px 40px rgba(88, 166, 255, 0.2);
+            border-color: #58a6ff;
+        }
+
+        .diagram {
+            background: rgba(48, 54, 61, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre;
+            color: #3fb950;
+            margin-top: 20px;
+            max-width: 100%;
+            overflow-x: auto;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .diagram:hover {
+            border-color: #3fb950;
+            background: rgba(48, 54, 61, 0.8);
+        }
+
+        .highlight { color: #ff7b72; font-weight: bold; }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: rgba(48, 54, 61, 0.7);
+            border: 1px solid #8b949e;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #58a6ff; color: #fff; border-color: #58a6ff; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Título -->
+    <div class="slide" id="slide-0">
+        <h1 class="fade-in">[ Aetheria Engine ]</h1>
+        <h2 class="fade-in">Apresentação e Setup do Ambiente Back-End</h2>
+        <p class="fade-in" style="margin-top: 20px;">Usamos o <b>tsx</b> durante o desenvolvimento para pular a etapa manual visualmente.</p>
+    </div>
+
+    <!-- Slide 2: A Arquitetura de Jogos Online -->
+    <div class="slide" id="slide-1">
+        <h1 class="fade-in">Front-End vs Back-End (Jogos)</h1>
+        <p class="fade-in">A arquitetura de sistemas cliente-servidor dividida por responsabilidades.</p>
+        <div class="diagram fade-in">
+[ O CLIENTE (Front-End) ]                  [ O SERVIDOR (Back-End) ]
+- Renderiza os Gráficos 3D                 - Processa regras e dano verdadeiro
+- Toca as músicas e efeitos                - Guarda o progresso no Banco de Dados
+- Lê teclado/mouse do jogador   <========> - Impede trapaças (Cheat Engine)
+- Unity, Unreal, Navegador                 - Node.js, C#, Java, Python
+        </div>
+    </div>
+
+    <!-- Slide 3: Instalação do Node -->
+    <div class="slide" id="slide-2">
+        <h1 class="fade-in">O Motor: Node.js</h1>
+        <p class="fade-in">Antes de escrevermos código, nossa máquina precisa aprender a falar JavaScript no servidor.</p>
+        <div class="diagram fade-in">
+[ Instalação do Node.js ]
+1. Acesse nodejs.org
+2. Baixe a versão LTS (Long Term Support - Recomendada e Estável)
+3. Instale com as configurações padrão
+4. Abra o terminal e verifique:
+> node -v
+> npm -v
+        </div>
+    </div>
+
+    <!-- Slide 4: O Nosso Ambiente -->
+    <div class="slide" id="slide-3">
+        <h1 class="fade-in">Ecossistema de Desenvolvimento</h1>
+        <p class="fade-in">A base de ferramentas que usaremos neste semestre após instalar o Node.</p>
+        <div class="diagram fade-in">
+1. Node.js (V8)     -> O motor que instalamos, roda o JS no SO.
+2. NPM              -> Gerenciador de Pacotes (já vem com o Node).
+3. TypeScript (TSC) -> Superset com tipagem forte (instalaremos via NPM).
+4. VS Code          -> Nosso Ambiente Integrado de Desenvolvimento (IDE).
+        </div>
+    </div>
+
+    <!-- Slide 5: O Coração do Projeto -->
+    <div class="slide" id="slide-4">
+        <h1 class="fade-in">package.json</h1>
+        <p class="fade-in">O arquivo mais importante do projeto. Ele é a "identidade" da sua aplicação.</p>
+        <div class="code-block fade-in" style="color: #79c0ff;">
+{<br>
+&nbsp;&nbsp;"name": "aetheria-engine-api",<br>
+&nbsp;&nbsp;"version": "1.0.0",<br>
+&nbsp;&nbsp;"description": "Motor lógico para o MMORPG Aetheria",<br>
+&nbsp;&nbsp;"scripts": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"dev": "tsx src/index.ts"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"devDependencies": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"typescript": "^5.0.0"<br>
+&nbsp;&nbsp;}<br>
+}
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" id="prevBtn">&uarr; Anterior</button>
+        <button class="btn" id="nextBtn">Próximo &darr;</button>
+    </div>
+
+    <script>
+        // Smooth Scrolling Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                scrollToSlide(currentSlide + 1);
+            } else if(e.key === 'ArrowUp') {
+                e.preventDefault();
+                scrollToSlide(currentSlide - 1);
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

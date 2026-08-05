@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheria Engine: Funções e Modularização</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;600;900&display=swap');
+        
+        body {
+            margin: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: hidden; 
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #30363d;
+            position: relative;
+        }
+
+        h1 {
+            color: #d2a8ff; 
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(210, 168, 255, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #8b949e;
+            font-weight: 300;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .code-block {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .code-block-sm {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .keyword { color: #ff7b72; }
+        .type { color: #79c0ff; }
+        .string { color: #a5d6ff; }
+        .func { color: #d2a8ff; font-weight: bold; }
+        .comment { color: #8b949e; font-style: italic; }
+
+        .highlight { color: #ff7b72; font-weight: bold; }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: rgba(48, 54, 61, 0.7);
+            border: 1px solid #8b949e;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn:hover { background: #d2a8ff; color: #0d1117; border-color: #d2a8ff; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Título -->
+    <div class="slide">
+        <h1 class="fade-in">[ Aetheria Engine ]</h1>
+        <h2 class="fade-in">Módulo 3: Funções, Callbacks e IIFE</h2>
+        <p class="fade-in" style="margin-top: 50px; color: #8b949e; text-align: center;">Use as setas do teclado &darr; &uarr; para navegar</p>
+    </div>
+
+    <!-- Slide 2: O Princípio DRY -->
+    <div class="slide">
+        <h1 class="fade-in">O Caos do "Copiar e Colar"</h1>
+        <p class="fade-in">Na Engenharia de Software, seguimos a regra de Ouro: <b>DRY (Don't Repeat Yourself)</b>. <br>Se você copia o mesmo código de cálculo de dano 10 vezes em lugares diferentes, e a regra mudar, você terá 10 dores de cabeça gigantes.</p>
+        <p class="fade-in" style="color: #ff7b72; font-weight: bold; font-size: 1.5rem;">A solução? Encapsular a lógica em Funções.</p>
+    </div>
+
+    <!-- Slide 3: A Fábrica -->
+    <div class="slide">
+        <h1 class="fade-in">O que é uma Função?</h1>
+        <p class="fade-in">Pense nela como uma "Fábrica" que você constrói uma vez, e depois só aperta o botão para usá-la. <br><b>Dica de Clean Code:</b> Nomes de funções sempre devem ser Verbos no infinitivo (Uma Ação).</p>
+        <div class="code-block fade-in">
+            <span class="comment">// 1. Construindo a Máquina</span><br>
+            <span class="keyword">function</span> <span class="func">exibirMenu</span>() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"1 - Atacar"</span>);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"2 - Curar"</span>);<br>
+            }<br><br>
+            <span class="comment">// 2. Apertando o botão!</span><br>
+            <span class="func">exibirMenu</span>();<br>
+            <span class="func">exibirMenu</span>(); <span class="comment">// Use 1000x se quiser, sem sujar o código!</span>
+        </div>
+    </div>
+
+    <!-- Slide 4: Parâmetros -->
+    <div class="slide">
+        <h1 class="fade-in">Parâmetros (A Matéria-Prima)</h1>
+        <p class="fade-in">Fábricas precisam de ingredientes para processar. As Funções usam Parâmetros. <br>O TypeScript brilha aqui: Nós blindamos as "portas" da função exigindo tipos exatos.</p>
+        <div class="code-block fade-in">
+            <span class="comment">// A porta "dano" SÓ ACEITA números.</span><br>
+            <span class="keyword">function</span> <span class="func">aplicarDano</span>(dano: <span class="type">number</span>, alvo: <span class="type">string</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">`O alvo ${alvo} tomou ${dano} de dano.`</span>);<br>
+            }<br><br>
+            <span class="comment">// Injetando a matéria prima correta:</span><br>
+            <span class="func">aplicarDano</span>(<span class="type">50</span>, <span class="string">"Goblin"</span>);
+        </div>
+    </div>
+
+    <!-- Slide 5: Retorno -->
+    <div class="slide">
+        <h1 class="fade-in">Return (O Produto Final)</h1>
+        <p class="fade-in">Algumas funções só fazem efeitos visuais (void). Outras são processadores matemáticos que precisam <b>devolver</b> o resultado para o sistema usar! Usamos a palavra mágica <b>return</b>.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">function</span> <span class="func">calcularCritico</span>(danoBase: <span class="type">number</span>): <span class="type">number</span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span> final = danoBase * <span class="type">2</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> final; <span class="comment">// Cospe o resultado para fora (e desliga a função)</span><br>
+            }<br><br>
+            <span class="comment">// O valor cuspido deve ser guardado em uma variável!</span><br>
+            <span class="keyword">let</span> meuDano = <span class="func">calcularCritico</span>(<span class="type">20</span>); <span class="comment">// meuDano agora vale 40</span>
+        </div>
+    </div>
+    
+    <!-- Slide 6: Escopo -->
+    <div class="slide">
+        <h1 class="fade-in">Escopo Local</h1>
+        <p class="fade-in">O que acontece dentro de uma função, fica dentro da função! <br>Variáveis nascem e morrem lá dentro, economizando Memória RAM.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">function</span> <span class="func">fazerMagia</span>() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span> segredo = <span class="string">"PoderOculto"</span>; <span class="comment">// Nasceu!</span><br>
+            } <span class="comment">// Morreu e foi removida da RAM!</span><br><br>
+            
+            <span class="comment">// ERRO GRAVE! O mundo exterior não tem acesso ao interior da função.</span><br>
+            console.log(segredo);
+        </div>
+    </div>
+
+    <!-- Slide 7: Arrow Function -->
+    <div class="slide">
+        <h1 class="fade-in">Arrow Functions (O Jeito Moderno)</h1>
+        <p class="fade-in">Em projetos modernos, nós transformamos funções em Constantes de forma elegante.</p>
+        <div class="fade-in" style="display: flex; gap: 20px; width: 80%; max-width: 900px;">
+            <div class="code-block" style="width: 50%;">
+                <span class="comment">/* Clássica (Anos 90) */</span><br>
+                <span class="keyword">function</span> <span class="func">curar</span>(hp: <span class="type">number</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> hp + <span class="type">50</span>;<br>
+                }
+            </div>
+            <div class="code-block" style="width: 50%; border-color: #d2a8ff;">
+                <span class="comment">/* ES6+ Arrow Function */</span><br>
+                <span class="keyword">const</span> <span class="func">curar</span> = (hp: <span class="type">number</span>) <span class="keyword">=></span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> hp + <span class="type">50</span>;<br>
+                };
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Callbacks -->
+    <div class="slide">
+        <h1 class="fade-in">Callbacks (Terceirizando Trabalho)</h1>
+        <p class="fade-in">Uma <b>Callback</b> é uma função passada como parâmetro para outra função. <br>É como dizer: <i>"Faça o seu trabalho e, quando terminar, rode essa outra função aqui"</i>.</p>
+        <div class="code-block-sm fade-in">
+            <span class="keyword">const</span> <span class="func">avisarMorte</span> = () <span class="keyword">=></span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"O Herói Caiu!"</span>);<br>
+            };<br><br>
+            <span class="comment">// A função recebe o 'avisarMorte' como parâmetro 'callback'</span><br>
+            <span class="keyword">const</span> <span class="func">processarDano</span> = (hp: <span class="type">number</span>, callback: <span class="type">Function</span>) <span class="keyword">=></span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (hp <= <span class="type">0</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;callback(); <span class="highlight">&larr; Executando a função terceirizada!</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            };<br><br>
+            <span class="comment">// Chamada da função passando a callback sem parênteses:</span><br>
+            <span class="func">processarDano</span>(<span class="type">0</span>, <span class="func">avisarMorte</span>);
+        </div>
+    </div>
+
+    <!-- Slide 9: IIFE -->
+    <div class="slide">
+        <h1 class="fade-in">IIFE (Função Imediata)</h1>
+        <p class="fade-in"><i>Immediately Invoked Function Expression</i>.<br>Uma função que nasce e se executa imediatamente. Ótimo para isolar memória do boot do servidor.</p>
+        <div class="code-block fade-in">
+            <span class="comment">// Envolvemos tudo em ( ) e colocamos um () no final para rodar</span><br>
+            (<span class="keyword">const</span> () <span class="keyword">=></span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">let</span> dbPassword = <span class="string">"super-secreta"</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"Servidor Conectado!"</span>);<br>
+            })();<br><br>
+            <span class="comment">// ERRO! O mundo externo não pode ver a senha!</span><br>
+            console.log(dbPassword); <span class="highlight">&larr; Proteção perfeita da RAM!</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" id="prevBtn">&uarr; Anterior</button>
+        <button class="btn" id="nextBtn">Próximo &darr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                scrollToSlide(currentSlide + 1);
+            } else if(e.key === 'ArrowUp') {
+                e.preventDefault();
+                scrollToSlide(currentSlide - 1);
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheria Engine: TypeScript & Lógica Avançada</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;600;900&display=swap');
+        
+        body {
+            margin: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: hidden; 
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #30363d;
+            position: relative;
+        }
+
+        h1 {
+            color: #58a6ff;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #8b949e;
+            font-weight: 300;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .code-block {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .code-block:hover {
+            box-shadow: 0 10px 40px rgba(88, 166, 255, 0.2);
+            border-color: #58a6ff;
+            transform: scale(1.02);
+        }
+
+        .keyword { color: #ff7b72; }
+        .type { color: #79c0ff; }
+        .string { color: #a5d6ff; }
+        .comment { color: #8b949e; font-style: italic; }
+
+        .diagram {
+            background: rgba(48, 54, 61, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre;
+            color: #3fb950;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .diagram:hover {
+            border-color: #3fb950;
+            transform: scale(1.02);
+        }
+
+        .highlight { color: #ff7b72; font-weight: bold; }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: rgba(48, 54, 61, 0.7);
+            border: 1px solid #8b949e;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn:hover { background: #3fb950; color: #fff; border-color: #3fb950; }
+
+        ul {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #c9d1d9;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Título -->
+    <div class="slide">
+        <h1 class="fade-in">[ Aetheria Engine ]</h1>
+        <h2 class="fade-in">Variáveis, Condicionais e Laços de Repetição</h2>
+        <p class="fade-in" style="margin-top: 50px; color: #8b949e; text-align: center;">Use as setas do teclado &darr; &uarr; para navegar</p>
+    </div>
+
+    <!-- Slide 2: O Problema do JS -->
+    <div class="slide">
+        <h1 class="fade-in">O Problema da Tipagem Dinâmica</h1>
+        <p class="fade-in">O V8 Engine tenta adivinhar o que você quer fazer na memória RAM. Chamamos isso de <b>Coerção de Tipo Oculta</b>, e causa falhas críticas.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> playerHP = <span class="string">"100"</span>; <span class="comment">// Texto vindo do Banco de Dados</span><br>
+            <span class="keyword">let</span> damage = <span class="type">20</span>;<br><br>
+            <span class="comment">// O JS tenta ajudar, e ao invés de subtrair, ele converte!</span><br>
+            playerHP += damage; <br>
+            <span class="comment">// Resultado: O jogador fica com "10020" de vida. Está imortal!</span>
+        </div>
+    </div>
+
+    <!-- Slide 3: Contratos TypeScript -->
+    <div class="slide">
+        <h1 class="fade-in">TypeScript: O Contrato Rigoroso</h1>
+        <p class="fade-in">A Tipagem Estática define o formato exato da variável. Tipos básicos:</p>
+        <div class="fade-in" style="background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; width: 80%; max-width: 800px; margin-bottom: 20px;">
+            <ul style="margin: 0; padding-left: 20px;">
+                <li><b class="type">number</b>: Números (dinheiro, HP, nível).</li>
+                <li><b class="type">string</b>: Textos. Sempre entre aspas (`""`).</li>
+                <li><b class="type">boolean</b>: Valores lógicos ou de estado (<span class="keyword">true</span> ou <span class="keyword">false</span>). Ex: `isAlive`.</li>
+            </ul>
+        </div>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> hp: <span class="type">number</span> = <span class="string">100</span>;<br>
+            <span class="comment">// Erro: Type 'string' is not assignable to type 'number'.</span><br>
+            hp = <span class="string">"Kael"</span>; <span class="highlight">&larr; BLOQUEADO! Nem chega no servidor.</span>
+        </div>
+    </div>
+
+    <!-- Slide 4: if, else if, else -->
+    <div class="slide">
+        <h1 class="fade-in">Condicionais: Tomando Decisões</h1>
+        <p class="fade-in">Usamos <b>if</b>, <b>else if</b> e <b>else</b> para criar ramificações baseadas em testes matemáticos.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">if</span> (xp >= <span class="type">100</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"🎉 Subiu de Nível!"</span>);<br>
+            } <span class="keyword">else if</span> (xp >= <span class="type">90</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"⚔️ Quase lá!"</span>);<br>
+            } <span class="keyword">else</span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"🛡️ Falta muito para upar."</span>);<br>
+            }
+        </div>
+    </div>
+
+    <!-- Slide 5: Switch Case -->
+    <div class="slide">
+        <h1 class="fade-in">Switch Case</h1>
+        <p class="fade-in">Ideal para quando uma variável possui opções exatas e limitadas (como Menus ou Classes de RPG).</p>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> classeHeroi = <span class="string">"Mago"</span>;<br><br>
+            <span class="keyword">switch</span> (classeHeroi) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span> <span class="string">"Guerreiro"</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hp = <span class="type">200</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span>; <span class="comment">// Pára a execução do switch aqui</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span> <span class="string">"Mago"</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hp = <span class="type">80</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">default</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hp = <span class="type">100</span>; <span class="comment">// Se não for nenhum dos anteriores</span><br>
+            }
+        </div>
+    </div>
+
+    <!-- Slide 6: Guard Clauses -->
+    <div class="slide">
+        <h1 class="fade-in">Cláusulas de Guarda (Clean Code)</h1>
+        <p class="fade-in">No Back-End evitamos o "Hadouken Code". Isole e trate os erros antes, deixando a lógica principal livre na raiz.</p>
+        <div class="fade-in" style="display: flex; gap: 20px; width: 80%; max-width: 900px;">
+            <div class="code-block" style="width: 50%; border-color: #ff7b72;">
+                <span class="comment">// ❌ Ruim (If Aninhado)</span><br>
+                <span class="keyword">if</span> (hp > <span class="type">0</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (mana >= <span class="type">10</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;atacar();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                }
+            </div>
+            <div class="code-block" style="width: 50%; border-color: #3fb950;">
+                <span class="comment">// ✅ Bom (Guard Clause)</span><br>
+                <span class="keyword">if</span> (hp <= <span class="type">0</span>) <span class="keyword">return</span>;<br>
+                <span class="keyword">if</span> (mana < <span class="type">10</span>) <span class="keyword">return</span>;<br>
+                <br>
+                atacar(); <span class="comment">// Caminho Feliz</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: FOR Loop -->
+    <div class="slide">
+        <h1 class="fade-in">Laços de Repetição: FOR</h1>
+        <p class="fade-in">Usado quando <b>SABEMOS EXATAMENTE</b> o número de vezes que vamos iterar (Ex: Iterar 5 monstros, 10 itens).</p>
+        <div class="code-block fade-in">
+            <span class="comment">// (1. Início ; 2. Condição de Parada ; 3. Passo)</span><br>
+            <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="type">1</span>; i <= <span class="type">5</span>; i++) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"Enfrentou monstro "</span> + i);<br>
+            }
+        </div>
+        <p class="fade-in" style="margin-top: 20px; color: #8b949e;">O operador <span class="keyword">++</span> significa "some ele mesmo com 1".</p>
+    </div>
+
+    <!-- Slide 8: WHILE Loop -->
+    <div class="slide">
+        <h1 class="fade-in">Laços de Repetição: WHILE</h1>
+        <p class="fade-in">Usado quando <b>NÃO SABEMOS</b> quantas vezes vai repetir, dependendo apenas de uma condição se tornar falsa.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> hpChefe = <span class="type">1000</span>;<br><br>
+            <span class="comment">// "Enquanto o chefe tiver vida..."</span><br>
+            <span class="keyword">while</span> (hpChefe > <span class="type">0</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="string">"Atacando Chefe!"</span>);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hpChefe -= <span class="type">150</span>;<br>
+            }<br>
+            console.log(<span class="string">"Chefe derrotado!"</span>);
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" id="prevBtn">&uarr; Anterior</button>
+        <button class="btn" id="nextBtn">Próximo &darr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                scrollToSlide(currentSlide + 1);
+            } else if(e.key === 'ArrowUp') {
+                e.preventDefault();
+                scrollToSlide(currentSlide - 1);
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
