@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheria Engine: Estruturas de Dados e POO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;600;900&display=swap');
+        
+        body {
+            margin: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: hidden; 
+        }
+
+        .slide {
+            min-width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #30363d;
+            position: relative;
+        }
+
+        h1 {
+            color: #f0883e; /* Tons Laranja/Dourado para Estruturas de Dados */
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(240, 136, 62, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #8b949e;
+            font-weight: 300;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .code-block {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .keyword { color: #ff7b72; }
+        .type { color: #79c0ff; }
+        .string { color: #a5d6ff; }
+        .func { color: #d2a8ff; font-weight: bold; }
+        .class { color: #f0883e; font-weight: bold; }
+        .comment { color: #8b949e; font-style: italic; }
+
+        .highlight { color: #ff7b72; font-weight: bold; }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: rgba(48, 54, 61, 0.7);
+            border: 1px solid #8b949e;
+            color: #c9d1d9;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn:hover { background: #f0883e; color: #0d1117; border-color: #f0883e; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1 -->
+    <div class="slide">
+        <h1 class="fade-in">[ Aetheria Engine ]</h1>
+        <h2 class="fade-in">Módulo 4: Estruturas de Dados e POO</h2>
+        <p class="fade-in" style="margin-top: 50px; color: #8b949e; text-align: center;">Setas &darr; &uarr; para navegar</p>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide">
+        <h1 class="fade-in">O Fim das Variáveis Soltas</h1>
+        <p class="fade-in">Se o jogo tiver 50 monstros, e cada monstro tiver Nome, HP e Dano, você criaria 150 variáveis independentes? Isso é o caos.<br>Precisamos <b>agrupar</b> os dados.</p>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide">
+        <h1 class="fade-in">Arrays (A Mochila)</h1>
+        <p class="fade-in">Um Vetor/Lista guarda vários valores do <b>mesmo tipo</b>.<br>Perfeito para Inventários! O Índice (Endereço) sempre começa no ZERO.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> mochila: <span class="type">string</span>[] = [<span class="string">"Poção"</span>, <span class="string">"Espada"</span>];<br><br>
+            <span class="comment">// Acessando o primeiro item:</span><br>
+            console.log(mochila[<span class="type">0</span>]); <span class="comment">// "Poção"</span><br><br>
+            <span class="comment">// Colocando e Tirando itens:</span><br>
+            mochila.<span class="func">push</span>(<span class="string">"Chave"</span>); <span class="comment">// Guarda no final</span><br>
+            mochila.<span class="func">pop</span>(); <span class="comment">// Arranca o último</span>
+        </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide">
+        <h1 class="fade-in">Objetos Literais (A Ficha do RPG)</h1>
+        <p class="fade-in">Objetos guardam características <b>diferentes</b> (chaves e valores) de uma única entidade.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">let</span> jogador = {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nome: <span class="string">"Arthur"</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;vida: <span class="type">100</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;vivo: <span class="keyword">true</span><br>
+            };<br><br>
+            <span class="comment">// Acessando propriedades com . (ponto)</span><br>
+            console.log(jogador.nome);<br>
+            jogador.vida = <span class="type">80</span>; <span class="comment">// Levou dano!</span>
+        </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide">
+        <h1 class="fade-in">Interfaces (O Contrato Blindado)</h1>
+        <p class="fade-in">O TypeScript permite criar nossos próprios Tipos (Contratos). <br>Se um objeto for do tipo da Interface, ele não pode ter variáveis sobrando nem faltando.</p>
+        <div class="code-block fade-in">
+            <span class="keyword">interface</span> <span class="class">Monstro</span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nome: <span class="type">string</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hp: <span class="type">number</span>;<br>
+            }<br><br>
+            <span class="keyword">let</span> chefe: <span class="class">Monstro</span> = {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nome: <span class="string">"Troll"</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hp: <span class="type">200</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// voa: true -> O TypeScript bloqueia! Erro!</span><br>
+            };
+        </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide">
+        <h1 class="fade-in">Classes e POO</h1>
+        <p class="fade-in">Uma Classe é a "Fábrica" que produz objetos.<br>O Objeto ganha "vida": ele guarda dados (Atributos) e tem Funções próprias (Métodos).</p>
+        <div class="code-block fade-in">
+            <span class="keyword">class</span> <span class="class">Heroi</span> {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nome: <span class="type">string</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">constructor</span>(nomeBatizado: <span class="type">string</span>) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.nome = nomeBatizado;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="func">atacar</span>() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(<span class="keyword">this</span>.nome + <span class="string">" Atacou!"</span>);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            }<br><br>
+            <span class="keyword">let</span> player = <span class="keyword">new</span> <span class="class">Heroi</span>(<span class="string">"Conan"</span>);<br>
+            player.<span class="func">atacar</span>(); <span class="comment">// Ação contida no próprio objeto!</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button class="btn" id="prevBtn">&uarr; Anterior</button>
+        <button class="btn" id="nextBtn">Próximo &darr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); scrollToSlide(currentSlide + 1); }
+            else if(e.key === 'ArrowUp') { e.preventDefault(); scrollToSlide(currentSlide - 1); }
+        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
