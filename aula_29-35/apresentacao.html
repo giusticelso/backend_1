@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aulas 29-35: POO Avançada (Aetheria Engine)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;600;800&display=swap');
+        
+        :root {
+            /* DARK MODE (Default) */
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --card-bg: #1e293b;
+            --code-bg: #020617;
+            --code-text: #e2e8f0;
+            --code-border: #334155;
+            --success: #4ade80;
+            --danger: #f87171;
+            --warning: #facc15;
+            --interactive: #c084fc;
+            
+            /* Syntax Highlight Dark */
+            --kw-color: #c678dd;
+            --type-color: #e5c07b;
+            --str-color: #98c379;
+            --com-color: #5c6370;
+            
+            --h1-grad1: #38bdf8;
+            --h1-grad2: #818cf8;
+        }
+
+        body.light-mode {
+            /* LIGHT MODE */
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.2);
+            --card-bg: #ffffff;
+            --code-bg: #f8fafc;
+            --code-text: #334155;
+            --code-border: #cbd5e1;
+            --interactive: #9333ea;
+            
+            /* Syntax Highlight Light */
+            --kw-color: #9333ea;
+            --type-color: #b45309;
+            --str-color: #16a34a;
+            --com-color: #64748b;
+            
+            --h1-grad1: #0284c7;
+            --h1-grad2: #4f46e5;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .slide-container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            scroll-snap-align: start;
+            padding: 2rem;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--h1-grad1), var(--h1-grad2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        h2 { font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem; }
+        h3 { font-size: 1.8rem; color: var(--text-color); opacity: 0.8; margin-bottom: 1rem; }
+        
+        p, li { font-size: 1.4rem; line-height: 1.6; max-width: 900px; margin-bottom: 1rem; }
+        
+        .code-block {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            color: var(--code-text);
+            border: 1px solid var(--code-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 900px;
+            overflow-x: auto;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .highlight-keyword { color: var(--kw-color); font-weight: bold; }
+        .highlight-type { color: var(--type-color); }
+        .highlight-string { color: var(--str-color); }
+        .highlight-comment { color: var(--com-color); font-style: italic; }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--accent);
+            width: 100%;
+            max-width: 1000px;
+            transition: all 0.3s;
+        }
+
+        .card-interactive {
+            border-top: 6px solid var(--interactive);
+            box-shadow: 0 10px 30px rgba(192, 132, 252, 0.15);
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--accent);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px var(--accent-glow);
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        /* Nav Controls */
+        .nav-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--accent);
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .nav-btn:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 5px 15px var(--accent-glow); }
+
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .badge-red { background: rgba(248, 113, 113, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-green { background: rgba(74, 222, 128, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .badge-blue { background: rgba(56, 189, 248, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+        .badge-purple { background: rgba(192, 132, 252, 0.1); color: var(--interactive); border: 1px solid var(--interactive); }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle -->
+    <div class="top-controls">
+        <button class="theme-toggle" id="themeBtn" title="Alternar Modo Claro/Escuro">☀️</button>
+    </div>
+
+    <!-- Capa -->
+    <div class="slide-container">
+        <div class="fade-in" style="text-align: center;">
+            <span class="badge badge-blue">Code Along! Abram o VS Code!</span>
+            <h1>Aetheria Engine API</h1>
+            <h2>Programação Orientada a Objetos</h2>
+            <p>Construindo o motor do jogo linha por linha.</p>
+        </div>
+    </div>
+
+    <!-- Slide 1: O Caos -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <h2>O Problema das Variáveis Soltas</h2>
+            <p>Criar 1 monstro é fácil:</p>
+            <div class="code-block">
+<span class="highlight-keyword">let</span> monstroNome = <span class="highlight-string">"Goblin"</span>;<br>
+<span class="highlight-keyword">let</span> monstroHp = <span class="highlight-type">100</span>;<br>
+            </div>
+            <p style="margin-top: 1rem;">E se precisarmos criar 50 monstros? Vamos ter 100 variáveis soltas pelo código. Precisamos de uma "Fábrica" que padronize isso: A <strong>Classe</strong>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Exemplo A (Professor) -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🧱 A Classe: Entidade</h2>
+            <p>A Classe é o molde. Os <strong>Atributos</strong> são as características.</p>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> Entidade {<br>
+&nbsp;&nbsp;<span class="highlight-comment">// Atributos</span><br>
+&nbsp;&nbsp;nome: <span class="highlight-type">string</span>;<br>
+&nbsp;&nbsp;vida: <span class="highlight-type">number</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-comment">// O Construtor: A função que roda quando o objeto nasce!</span><br>
+&nbsp;&nbsp;<span class="highlight-keyword">constructor</span>(nomeRecebido: <span class="highlight-type">string</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.nome = nomeRecebido;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.vida = <span class="highlight-type">100</span>;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Instanciando -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🚀 Instanciando (Dando Vida)</h2>
+            <p>A palavra <span class="highlight-keyword">new</span> aperta o botão de ligar a fábrica.</p>
+            <div class="code-block">
+<span class="highlight-keyword">let</span> heroi = <span class="highlight-keyword">new</span> Entidade(<span class="highlight-string">"Arthur"</span>);<br>
+<span class="highlight-keyword">console</span>.log(heroi.nome); <span class="highlight-comment">// Output: Arthur</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Exemplo B (Turma Dita) -->
+    <div class="slide-container">
+        <div class="card card-interactive fade-in">
+            <span class="badge badge-purple">Agora é com vocês!</span>
+            <h2>🧪 Sua Vez: A Poção</h2>
+            <p>O Professor criou o Herói. Agora <strong>vocês vão ditar</strong> como criar a Classe de um Item.</p>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li>O nome da classe será <strong>Pocao</strong>.</li>
+                <li>Os atributos serão <strong>nome</strong> e <strong>cura</strong>.</li>
+                <li>O que vai dentro do <strong>constructor</strong>?</li>
+                <li>Como instanciamos uma Poção Vermelha que cura 50 de vida?</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 5: O Hack -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-red">Alerta de Segurança!</span>
+            <h2>🚨 Invasão no Jogo!</h2>
+            <p>Adicionem essa linha embaixo do herói de vocês e rodem o código:</p>
+            <div class="code-block">
+heroi.vida = <span class="highlight-type">-50000</span>;<br>
+<span class="highlight-keyword">console</span>.log(heroi.vida); <span class="highlight-comment">// O herói anda morto?</span>
+            </div>
+            <p style="margin-top: 1rem; font-weight: bold; color: var(--danger);">O jogo permitiu vida negativa! As portas estão abertas.</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: Encapsulamento -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🔒 Encapsulamento: Modificadores</h2>
+            <p>Temos que colocar fechaduras nos nossos atributos.</p>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li><span class="highlight-keyword">public</span>: Porta aberta (Qualquer um edita).</li>
+                <li><span class="highlight-keyword">private</span>: Cadeado forte (Ninguém de fora encosta!).</li>
+                <li><span class="highlight-keyword">protected</span>: Cadeado familiar (Só classes filhas podem mexer).</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 7: Getters e Setters -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🛡️ Getters e Setters</h2>
+            <p>Se a vida está <code>private</code>, não conseguimos ver. Usamos <strong>Getters</strong> para olhar pelo buraco da fechadura.</p>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> Entidade {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">private</span> vida: <span class="highlight-type">number</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-comment">// GETTER (Apenas Leitura)</span><br>
+&nbsp;&nbsp;<span class="highlight-keyword">get</span> lerVida(): <span class="highlight-type">number</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">return this</span>.vida;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Turma Dita Poção Segura -->
+    <div class="slide-container">
+        <div class="card card-interactive fade-in">
+            <span class="badge badge-purple">Agora é com vocês!</span>
+            <h2>🧪 Protegendo a Poção</h2>
+            <p>Alguém está transformando nossas poções de cura em veneno botando números negativos!</p>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li>Usem o <span class="highlight-keyword">private</span> para trancar a cura.</li>
+                <li>Criem o <strong>Getter</strong> para ler o poder da poção.</li>
+                <li>Criem um <strong>Setter</strong> que bloqueie qualquer número negativo!</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 9: Herança -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🌳 Herança: O DRY</h2>
+            <p>Queremos criar um Mago e um Guerreiro. Vamos repetir Nome e Vida de novo? <strong>Não!</strong></p>
+            <p>Vamos <strong>Herdar</strong> tudo da Entidade usando <span class="highlight-keyword">extends</span>.</p>
+        </div>
+    </div>
+
+    <!-- Slide 10: O Super -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🧙‍♂️ Construindo o Mago e o `super()`</h2>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> Mago <span class="highlight-keyword">extends</span> Entidade {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> mana: <span class="highlight-type">number</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-keyword">constructor</span>(nome: <span class="highlight-type">string</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">super</span>(nome); <span class="highlight-comment">// Liga para o construtor do PAI (Entidade) passar o RG!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.mana = <span class="highlight-type">100</span>;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Turma Dita Guerreiro -->
+    <div class="slide-container">
+        <div class="card card-interactive fade-in">
+            <span class="badge badge-purple">Agora é com vocês!</span>
+            <h2>⚔️ O Guerreiro</h2>
+            <p>Chegou a hora de criarmos o braço forte do grupo.</p>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li>Criem a classe <strong>Guerreiro</strong>.</li>
+                <li>De quem ele vai herdar? (<span class="highlight-keyword">extends</span>)</li>
+                <li>Em vez de mana, o Guerreiro usa <strong>Fúria</strong> (começa com zero).</li>
+                <li>Usem o <span class="highlight-keyword">super()</span> no construtor.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 12: Polimorfismo -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Conclusão</span>
+            <h2>🎭 Polimorfismo</h2>
+            <p>Muitas Formas. O Pai tem um ataque genérico. O Mago herda esse método, mas <strong>sobrescreve</strong> (Override) usando Bola de Fogo. O Guerreiro sobrescreve usando Espadada.</p>
+            <p>O nome da ação é o mesmo (<code>atacar()</code>), mas cada classe tem a sua forma de agir!</p>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn">⬅️ Voltar</button>
+        <button class="nav-btn" id="nextBtn">Avançar ➡️</button>
+    </div>
+
+    <script>
+        // Light/Dark Mode Toggle Logic
+        const themeBtn = document.getElementById('themeBtn');
+        const body = document.body;
+        
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if(body.classList.contains('light-mode')) {
+                themeBtn.textContent = '🌙';
+                themeBtn.title = 'Mudar para Modo Escuro';
+            } else {
+                themeBtn.textContent = '☀️';
+                themeBtn.title = 'Mudar para Modo Claro';
+            }
+        });
+
+        // Slide Navigation Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+        
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); scrollToSlide(currentSlide + 1); }
+            else if(e.key === 'ArrowUp') { e.preventDefault(); scrollToSlide(currentSlide - 1); }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
