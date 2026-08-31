@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aulas 36-42: Herança, Polimorfismo e Enum (Aetheria Engine)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;600;800&display=swap');
+        
+        :root {
+            /* DARK MODE (Default) */
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --card-bg: #1e293b;
+            --code-bg: #020617;
+            --code-text: #e2e8f0;
+            --code-border: #334155;
+            --success: #4ade80;
+            --danger: #f87171;
+            --warning: #facc15;
+            --interactive: #c084fc;
+            
+            /* Syntax Highlight Dark */
+            --kw-color: #c678dd;
+            --type-color: #e5c07b;
+            --str-color: #98c379;
+            --com-color: #5c6370;
+            
+            --h1-grad1: #38bdf8;
+            --h1-grad2: #818cf8;
+        }
+
+        body.light-mode {
+            /* LIGHT MODE */
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.2);
+            --card-bg: #ffffff;
+            --code-bg: #f8fafc;
+            --code-text: #334155;
+            --code-border: #cbd5e1;
+            --interactive: #9333ea;
+            
+            /* Syntax Highlight Light */
+            --kw-color: #9333ea;
+            --type-color: #b45309;
+            --str-color: #16a34a;
+            --com-color: #64748b;
+            
+            --h1-grad1: #0284c7;
+            --h1-grad2: #4f46e5;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .slide-container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            scroll-snap-align: start;
+            padding: 2rem;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--h1-grad1), var(--h1-grad2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        h2 { font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem; }
+        h3 { font-size: 1.8rem; color: var(--text-color); opacity: 0.8; margin-bottom: 1rem; }
+        
+        p, li { font-size: 1.4rem; line-height: 1.6; max-width: 900px; margin-bottom: 1rem; }
+        
+        .code-block {
+            background: var(--code-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            color: var(--code-text);
+            border: 1px solid var(--code-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 900px;
+            overflow-x: auto;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .highlight-keyword { color: var(--kw-color); font-weight: bold; }
+        .highlight-type { color: var(--type-color); }
+        .highlight-string { color: var(--str-color); }
+        .highlight-comment { color: var(--com-color); font-style: italic; }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--accent);
+            width: 100%;
+            max-width: 1000px;
+            transition: all 0.3s;
+        }
+
+        .card-interactive {
+            border-top: 6px solid var(--interactive);
+            box-shadow: 0 10px 30px rgba(192, 132, 252, 0.15);
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--accent);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px var(--accent-glow);
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        /* Nav Controls */
+        .nav-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--accent);
+            padding: 1rem 1.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .nav-btn:hover { background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 5px 15px var(--accent-glow); }
+
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .badge-red { background: rgba(248, 113, 113, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-green { background: rgba(74, 222, 128, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .badge-blue { background: rgba(56, 189, 248, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+        .badge-purple { background: rgba(192, 132, 252, 0.1); color: var(--interactive); border: 1px solid var(--interactive); }
+    </style>
+</head>
+<body>
+
+    <!-- Theme Toggle -->
+    <div class="top-controls">
+        <button class="theme-toggle" id="themeBtn" title="Alternar Modo Claro/Escuro">☀️</button>
+    </div>
+
+    <!-- Capa -->
+    <div class="slide-container">
+        <div class="fade-in" style="text-align: center;">
+            <span class="badge badge-blue">Aulas 36-42</span>
+            <h1>Aetheria Engine API</h1>
+            <h2>UML, Herança e Polimorfismo</h2>
+            <p>Construindo classes dinâmicas e reutilizáveis em TypeScript.</p>
+        </div>
+    </div>
+
+    <!-- Slide 1: Anatomia UML -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-purple">Lendo Plantas Baixas</span>
+            <h2>🗺️ Anatomia de uma Classe UML</h2>
+            <p>Um bloco UML é sempre desenhado dividido em 3 andares (topo, meio e base):</p>
+            <div class="code-block" style="text-align: center; display: flex; justify-content: center; background: transparent; border: none; box-shadow: none;">
+                <div style="border: 2px solid var(--code-border); width: 400px; border-radius: 8px; overflow: hidden; font-family: 'Fira Code', monospace; background-color: var(--code-bg);">
+                    <div style="background-color: var(--accent); padding: 10px; font-weight: bold; border-bottom: 2px solid var(--code-border); color: #fff; font-size: 1.4rem;">
+                        1. NOME DA CLASSE
+                    </div>
+                    <div style="padding: 15px; border-bottom: 2px solid var(--code-border); color: var(--text-color); font-size: 1.2rem;">
+                        <strong>2. Atributos (Características)</strong><br>
+                        <span style="opacity: 0.8">Ex: # nome, # vida</span>
+                    </div>
+                    <div style="padding: 15px; color: var(--text-color); font-size: 1.2rem;">
+                        <strong>3. Métodos (Ações)</strong><br>
+                        <span style="opacity: 0.8">Ex: + atacar()</span>
+                    </div>
+                </div>
+            </div>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li>Símbolo <code>+</code> : Public (Todos acessam)</li>
+                <li>Símbolo <code>-</code> : Private (Ninguém acessa, trancado!)</li>
+                <li>Símbolo <code>#</code> : Protected (Herdável por filhos)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 2: Herança UML -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>🗺️ Diagrama de Classes (UML)</h2>
+            <p>Antes de codificar, desenhamos a "Planta Baixa" usando <strong>UML</strong>. A seta vazada indica a <strong>Herança</strong> (é um).</p>
+            <div class="code-block" style="text-align: center;">
+                <div class="mermaid">
+                    classDiagram
+                        class Personagem {
+                            # string nome
+                            # number vida
+                            + andar() void
+                        }
+                        class Guerreiro {
+                            + number forcaFisica
+                            + atacar() void
+                        }
+                        Guerreiro --|> Personagem
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Classe Base -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>1. A Classe Base (O Molde)</h2>
+            <p>Usamos o modificador <strong>protected</strong> para que as classes filhas enxerguem esses dados (o private bloqueia!).</p>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> <span class="highlight-type">Personagem</span> {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">protected</span> nome: <span class="highlight-type">string</span>;<br>
+&nbsp;&nbsp;<span class="highlight-keyword">protected</span> vida: <span class="highlight-type">number</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-keyword">constructor</span>(nome: <span class="highlight-type">string</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.nome = nome;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.vida = <span class="highlight-type">100</span>;<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> atacar(): <span class="highlight-keyword">void</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">console</span>.log(<span class="highlight-string">"O personagem ataca com as mãos!"</span>);<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Herança -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>2. Herança (extends & super)</h2>
+            <p>O <strong>Guerreiro</strong> herda tudo de Personagem. O <strong>super()</strong> é obrigatório para chamar o construtor do Pai!</p>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> <span class="highlight-type">Guerreiro</span> <span class="highlight-keyword">extends</span> <span class="highlight-type">Personagem</span> {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> forca: <span class="highlight-type">number</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-keyword">constructor</span>(nome: <span class="highlight-type">string</span>, forca: <span class="highlight-type">number</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-comment">// 1º Passo: Chama o construtor do Pai</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">super</span>(nome);<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-comment">// 2º Passo: Inicializa o atributo próprio</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.forca = forca;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Polimorfismo -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Professor Ensina</span>
+            <h2>3. Polimorfismo (Override)</h2>
+            <p>Subscrevemos o método <strong>atacar()</strong>. Múltiplas formas de agir com o mesmo comando!</p>
+            <div class="code-block">
+<span class="highlight-keyword">class</span> <span class="highlight-type">Mago</span> <span class="highlight-keyword">extends</span> <span class="highlight-type">Personagem</span> {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> mana: <span class="highlight-type">number</span> = <span class="highlight-type">50</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-comment">// Nova forma de atacar no Mago</span><br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> atacar(): <span class="highlight-keyword">void</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">if</span> (<span class="highlight-keyword">this</span>.mana >= <span class="highlight-type">10</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">console</span>.log(<span class="highlight-string">`Bola de fogo! 🔥`</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.mana -= <span class="highlight-type">10</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Enum -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-purple">Segurança Adicional</span>
+            <h2>4. Enumerações (enum)</h2>
+            <p>Dicionários imutáveis para evitar erros de digitação.</p>
+            <div class="code-block">
+<span class="highlight-keyword">enum</span> <span class="highlight-type">EstadoJogador</span> {<br>
+&nbsp;&nbsp;VIVO = <span class="highlight-string">"VIVO"</span>,<br>
+&nbsp;&nbsp;MORTO = <span class="highlight-string">"MORTO"</span>,<br>
+&nbsp;&nbsp;ENVENENADO = <span class="highlight-string">"ENVENENADO"</span><br>
+}<br><br>
+<span class="highlight-keyword">class</span> <span class="highlight-type">Personagem</span> {<br>
+&nbsp;&nbsp;<span class="highlight-keyword">public</span> estado: <span class="highlight-type">EstadoJogador</span>;<br><br>
+&nbsp;&nbsp;<span class="highlight-keyword">constructor</span>(nome: <span class="highlight-type">string</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.nome = nome;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight-keyword">this</span>.estado = EstadoJogador.VIVO;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Turma Dita -->
+    <div class="slide-container">
+        <div class="card card-interactive fade-in">
+            <span class="badge badge-purple">Agora é com vocês!</span>
+            <h2>⚔️ Code Along: A Criação</h2>
+            <p>Vamos abrir o VS Code e construir esse império.</p>
+            <ul style="margin-top: 1rem; margin-left: 2rem;">
+                <li>Vamos criar a pasta e o projeto Node puro.</li>
+                <li>Faremos juntos a Classe Base <code>Personagem</code>.</li>
+                <li>Vocês ditarão como farão o <code>Mago</code>!</li>
+                <li>Brincaremos com um array de Personagens chamando <code>.atacar()</code> no polimorfismo.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" id="prevBtn">⬅️ Voltar</button>
+        <button class="nav-btn" id="nextBtn">Avançar ➡️</button>
+    </div>
+
+    <!-- Script do Mermaid -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+        
+        window.updateMermaidTheme = function(isDark) {
+            mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+            mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+        }
+    </script>
+
+    <script>
+        // Light/Dark Mode Toggle Logic
+        const themeBtn = document.getElementById('themeBtn');
+        const body = document.body;
+        
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            
+            if(isLight) {
+                themeBtn.textContent = '🌙';
+                themeBtn.title = 'Mudar para Modo Escuro';
+            } else {
+                themeBtn.textContent = '☀️';
+                themeBtn.title = 'Mudar para Modo Claro';
+            }
+
+            if (window.updateMermaidTheme) {
+                window.updateMermaidTheme(!isLight);
+            }
+        });
+
+        // Slide Navigation Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        
+        function scrollToSlide(index) {
+            if(index >= 0 && index < slides.length) {
+                currentSlide = index;
+                slides[currentSlide].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        document.getElementById('nextBtn').addEventListener('click', () => scrollToSlide(currentSlide + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => scrollToSlide(currentSlide - 1));
+        
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); scrollToSlide(currentSlide + 1); }
+            else if(e.key === 'ArrowUp') { e.preventDefault(); scrollToSlide(currentSlide - 1); }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

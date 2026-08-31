@@ -1,0 +1,14 @@
+{
+  "name": "aetheria-engine-aula-36-42",
+  "version": "1.0.0",
+  "description": "Motor lógico de batalha de Aetheria (Herança e Polimorfismo)",
+  "main": "engine.ts",
+  "scripts": {
+    "start": "ts-node engine.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.16"
+  }
+}
