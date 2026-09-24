@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas de Classe UML - E-commerce</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --card-bg: #1e293b;
+            --code-bg: #0b1120;
+            --code-border: #334155;
+            
+            --kw-color: #f472b6;
+            --str-color: #a7f3d0;
+            --type-color: #fbbf24;
+            --comment-color: #64748b;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f0f4f8;
+            --text-color: #1e293b;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --card-bg: #ffffff;
+            --code-bg: #f8fafc;
+            --code-border: #cbd5e1;
+            
+            --kw-color: #db2777;
+            --str-color: #059669;
+            --type-color: #d97706;
+            --comment-color: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(var(--bg-color), 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--code-border);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .theme-toggle:hover {
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .slide-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 2rem 2rem;
+            position: relative;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid var(--code-border);
+            position: relative;
+            z-index: 10;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .badge-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #c084fc; }
+        .badge-blue { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
+
+        [data-theme="light"] .badge-purple { color: #9333ea; border-color: #9333ea; }
+        [data-theme="light"] .badge-blue { color: #0284c7; border-color: #0284c7; }
+        [data-theme="light"] .badge-red { color: #dc2626; border-color: #dc2626; }
+        [data-theme="light"] .badge-green { color: #059669; border-color: #059669; }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--text-color), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 { font-size: 2.2rem; margin-bottom: 1rem; }
+        p { font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9; line-height: 1.6; }
+
+        .code-block {
+            background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+        }
+
+        ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        li { margin-bottom: 0.5rem; }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .print-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 20px var(--accent-glow);
+            z-index: 1000;
+        }
+        .print-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .theme-toggle, nav, .print-btn { display: none; }
+            .slide-container { 
+                height: 100vh; 
+                page-break-after: always;
+                padding: 0;
+                align-items: center;
+            }
+            .card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .diagram-container {
+                background: transparent;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        const savedTheme = localStorage.getItem('ecommerce_theme');
+        const mermaidTheme = savedTheme === 'light' ? 'default' : 'dark';
+        
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: mermaidTheme,
+            securityLevel: 'loose',
+            class: {
+                hideEmptyMembersBox: true
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">E-Commerce UML</div>
+        <button class="theme-toggle" id="themeToggle">
+            <span>🌙 Dark Mode</span>
+        </button>
+    </nav>
+    
+    <button class="print-btn" onclick="window.print()">🖨️ Salvar como PDF</button>
+
+    <!-- Slide 0 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-purple">Introdução</span>
+            <h1>Diagramas de Classe com UML</h1>
+            <h2>Modelando um E-commerce</h2>
+            <p>Vamos aprender a mapear as regras de negócio de uma loja virtual, abordando desde a estrutura básica de uma entidade até os relacionamentos mais complexos como Composição e Interfaces.</p>
+        </div>
+    </div>
+
+    <!-- Slide 1 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Estrutura</span>
+            <h2>📦 1. A Anatomia de uma Entidade</h2>
+            <p>Uma classe é dividida em 3 compartimentos: Nome (Identificador), Atributos (Dados/Estado) e Métodos (Ações/Comportamento).</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class Produto {
+                            + string nome
+                            + float preco
+                            + int estoque
+                            + aplicarDesconto(porcento)
+                            + atualizarEstoque(qtd)
+                        }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-green">Segurança</span>
+            <h2>🔒 2. Visibilidade (Encapsulamento)</h2>
+            <p>Garante que dados sensíveis não sejam alterados indevidamente:</p>
+            <ul>
+                <li><code>+</code> <strong>Public:</strong> Acesso livre.</li>
+                <li><code>-</code> <strong>Private:</strong> Acesso apenas interno à classe.</li>
+                <li><code>#</code> <strong>Protected:</strong> Acesso pela classe e suas herdeiras.</li>
+            </ul>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class ContaCliente {
+                            + string email
+                            - string senhaHash
+                            # float pontosFidelidade
+                            + fazerLogin(senha)
+                            - validarToken()
+                        }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-red">Matemática</span>
+            <h2>🔢 3. Cardinalidade (Multiplicidade)</h2>
+            <p>Define <strong>quantos</strong> objetos estão envolvidos. Um <code>Cliente</code> pode realizar de <code>0 a muitos</code> (<code>0..*</code>) <code>Pedidos</code>. Mas um <code>Pedido</code> pertence a exatamente <code>1</code> <code>Cliente</code>.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        Cliente "1" --&gt; "0..*" Pedido : realiza
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Relacionamento</span>
+            <h2>🔗 4. Associação (O Básico)</h2>
+            <p>Uma classe interage com a outra, mas são independentes. Não há "posse". Exemplo: O Cliente pede ajuda no chat para um Atendente.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class Cliente {
+                            + abrirChamado()
+                        }
+                        class Atendente {
+                            + responder()
+                        }
+                        Cliente --&gt; Atendente : solicita ajuda
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-purple">Relacionamento</span>
+            <h2>🤍 5. Agregação (Dependência Fraca)</h2>
+            <p>O <strong>Todo</strong> agrupa a <strong>Parte</strong>, mas a Parte sobrevive sozinha. Representado pelo <strong>losango vazado</strong>.</p>
+            <p>Se o <code>CarrinhoCompras</code> for esvaziado, o <code>Produto</code> continua existindo normalmente na loja.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class CarrinhoCompras {
+                            + float valorTotal
+                        }
+                        class Produto {
+                            + string nome
+                        }
+                        CarrinhoCompras o-- Produto : agrupa (0..*)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-red">Relacionamento</span>
+            <h2>🖤 6. Composição (Dependência Vital)</h2>
+            <p>A Parte <strong>morre</strong> se o Todo for destruído. Representado pelo <strong>losango preenchido</strong>.</p>
+            <p>Se uma compra for cancelada e o <code>Pedido</code> deletado, os registros dos <code>ItensDoPedido</code> devem ser destruídos junto, pois não fazem sentido sozinhos.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class Pedido {
+                            + dataCriacao
+                        }
+                        class ItemPedido {
+                            + int quantidade
+                        }
+                        Pedido *-- ItemPedido : compõe (1..*)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-green">Arquitetura</span>
+            <h2>🧬 7. Herança (Generalização)</h2>
+            <p>Relação <strong>"É um"</strong>. Classes filhas herdam características da mãe. Um Produto Físico (com frete) e um Produto Digital (com link) <strong>são</strong> Produtos.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class Produto {
+                            + string nome
+                            + float preco
+                        }
+                        class ProdFisico {
+                            + float peso
+                        }
+                        class ProdDigital {
+                            + string linkDownload
+                        }
+                        Produto &lt;|-- ProdFisico
+                        Produto &lt;|-- ProdDigital
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-blue">Arquitetura</span>
+            <h2>🔌 8. Realização (Interfaces)</h2>
+            <p>Uma Interface é um <strong>Contrato</strong>. Ela diz "o que" fazer, mas não "como". Classes assinam o contrato prometendo implementá-lo.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class IPagamento {
+                            &lt;&lt;interface&gt;&gt;
+                            + processar(valor)
+                        }
+                        class Pix {
+                            + string chave
+                            + processar(valor)
+                        }
+                        class Cartao {
+                            + string numCartao
+                            + processar(valor)
+                        }
+                        IPagamento &lt;|.. Pix : implementa
+                        IPagamento &lt;|.. Cartao : implementa
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9 -->
+    <div class="slide-container">
+        <div class="card fade-in">
+            <span class="badge badge-purple">Conclusão</span>
+            <h2>🌐 9. O Ecossistema Completo</h2>
+            <p>Com o UML, conseguimos mapear a arquitetura inteira do sistema antes de codificar.</p>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    classDiagram
+                        class IPagamento {
+                            &lt;&lt;interface&gt;&gt;
+                            + processar(valor)
+                        }
+
+                        class ProdutoBase {
+                            &lt;&lt;abstract&gt;&gt;
+                            + string sku
+                            + float precoBase
+                        }
+                        
+                        class Cliente {
+                            - string senha
+                            + Pedido[] historico
+                        }
+                    
+                        ProdutoBase &lt;|-- ProdFisico
+                        ProdutoBase &lt;|-- ProdDigital
+                        IPagamento &lt;|.. Cartao
+                        IPagamento &lt;|.. Pix
+                        
+                        Cliente "1" --&gt; "0..*" Pedido : realiza
+                        Pedido "1" *-- "1..*" ItemPedido : possui itens
+                        ItemPedido "0..*" o-- "1" ProdutoBase : referencia
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        
+        let isDark = localStorage.getItem('ecommerce_theme') !== 'light';
+        root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        themeToggle.innerHTML = isDark ? '<span>☀️ Light Mode</span>' : '<span>🌙 Dark Mode</span>';
+
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            localStorage.setItem('ecommerce_theme', isDark ? 'dark' : 'light');
+            location.reload(); 
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
