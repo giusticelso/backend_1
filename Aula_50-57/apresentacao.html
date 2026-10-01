@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aulas 57-63: WebServices, REST e JSON (Aetheria Engine)</title>
+<style>
+:root{--bg:#0f172a;--fg:#f8fafc;--mut:#94a3b8;--ac:#38bdf8;--card:#1e293b;--bd:#334155;--code:#0b1120;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="light"]{--bg:#f8fafc;--fg:#0f172a;--mut:#64748b;--ac:#0284c7;--card:#ffffff;--bd:#e2e8f0;--code:#f1f5f9}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;overflow:hidden}
+.bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;font-size:14px;z-index:5}
+.bar span{color:var(--ac);letter-spacing:.08em;text-transform:uppercase;font-size:14px; font-weight: 800;}
+button{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--bd);padding:8px 14px;border-radius:6px;cursor:pointer}
+button:hover{border-color:var(--ac);color:var(--ac)}
+.bar div{display:flex;gap:8px}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:70px 8vw 80px;overflow-y:auto}
+.slide.active{display:flex}
+.num{color:var(--mut);font-size:15px;font-weight:600;letter-spacing:.06em;margin-bottom:10px}
+h1{font-size:clamp(38px,6vw,72px);margin:0 0 16px;line-height:1.05; background: linear-gradient(to right, var(--fg), var(--ac)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+h2{font-size:clamp(26px,3.6vw,44px);margin:0 0 20px;line-height:1.15; color: var(--ac)}
+h3{font-size:15px;color:var(--mut);margin:0 0 6px;letter-spacing:.04em;text-transform:uppercase}
+p,li{font-size:clamp(17px,1.7vw,23px);line-height:1.5;margin:0 0 10px;max-width:70ch}
+ul{padding-left:1.1em;margin:0}
+.sub{color:var(--mut);font-size:clamp(18px,2vw,26px)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);}
+pre{background:var(--code);border:1px solid var(--bd);border-radius:8px;padding:16px 20px;margin:0;font:clamp(13px,1.35vw,18px)/1.5 'Fira Code', Consolas, monospace;overflow-x:auto;color:var(--fg)}
+code{font-family:'Fira Code', Consolas, monospace;background:var(--code);padding:2px 6px;border-radius:4px;font-size:.9em; border: 1px solid var(--bd);}
+table{border-collapse:collapse;width:100%;font-size:clamp(15px,1.5vw,20px)}
+td,th{border-bottom:1px solid var(--bd);padding:12px 10px;text-align:left}
+th{color:var(--ac);font-size:.85em;text-transform:uppercase;letter-spacing:.05em}
+.nav{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;color:var(--mut);font-size:14px;z-index:5}
+@media (max-width:760px){.cols{grid-template-columns:1fr}.slide{padding:70px 6vw 80px;justify-content:flex-start}}
+.slide.active>*{animation:up .6s cubic-bezier(0.16, 1, 0.3, 1) both}.slide.active>*:nth-child(2){animation-delay:.1s}.slide.active>*:nth-child(3){animation-delay:.2s}.slide.active>*:nth-child(4){animation-delay:.3s}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+#prog{position:fixed;top:0;left:0;height:4px;width:0;background:var(--ac);transition:width .4s ease-out;z-index:9}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:6px 0 14px}
+.card{transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-5px);border-color:var(--ac)}
+.go{cursor:pointer}
+.tag{display:inline-block;font:700 13px system-ui,Arial,sans-serif;padding:4px 12px;border-radius:6px;color:#fff}.g{background:#10b981}.b{background:#3b82f6}.y{background:#f59e0b}.r{background:#ef4444}.p{background:#8b5cf6}
+.flow{display:flex;align-items:center;gap:0;margin:0 0 30px}.node{background:var(--card);border:2px solid var(--ac);border-radius:12px;padding:16px 24px;font-weight:700;font-size:22px;text-align:center; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);}.node small{display:block;font:400 14px system-ui,Arial,sans-serif;color:var(--mut)}
+.line{position:relative;flex:1;height:44px;border-top:2px dashed var(--bd);border-bottom:2px dashed var(--bd)}
+.line i{position:absolute;top:-7px;left:0;width:12px;height:12px;border-radius:50%;background:var(--ac);animation:go 2.4s linear infinite}.line i.r{top:auto;bottom:-7px;background:#ef4444;animation:back 2.4s linear infinite 1.2s}
+@keyframes go{to{left:calc(100% - 12px)}}@keyframes back{from{left:calc(100% - 12px)}to{left:0}}
+textarea{width:100%;height:38vh;background:var(--code);color:var(--fg);border:2px solid var(--bd);border-radius:8px;padding:16px;font:16px/1.5 'Fira Code', Consolas, monospace;resize:vertical; transition: border-color 0.3s;}
+textarea:focus{outline:none;border-color:var(--ac);}
+.row{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}.stat{flex:1;font:600 16px system-ui,Arial,sans-serif;min-width:200px}.stat.v{color:#10b981}.stat.e{color:#ef4444}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div class="bar"><span>Aetheria Engine</span><div><button id="theme" type="button">Tema</button></div></div>
+
+<!-- CAPA -->
+<section class="slide active">
+<div class="num">AULAS 57-63</div>
+<h1>WebServices e API REST</h1>
+<p class="sub">Conectando o Back-End do Aetheria ao Mundo</p>
+<p class="sub">JSON, Serialização e Ciclo HTTP</p>
+</section>
+
+<!-- ÍNDICE -->
+<section class="slide">
+<div class="num">ROTEIRO</div>
+<h2>Arquitetura de Rede</h2>
+<div class="grid">
+<div class="card go" data-go="2"><h3>Parte 1</h3><b>A Ponte (WebServices)</b><p>O que são e como conectam clientes.</p></div>
+<div class="card go" data-go="4"><h3>Parte 2</h3><b>O Carteiro (HTTP)</b><p>Headers, Métodos e Status Codes.</p></div>
+<div class="card go" data-go="7"><h3>Parte 3</h3><b>O Padrão (REST)</b><p>Como desenhar URLs perfeitas para o Jogo.</p></div>
+<div class="card go" data-go="9"><h3>Parte 4</h3><b>A Língua (JSON vs XML)</b><p>O formato de dados universal.</p></div>
+<div class="card go" data-go="13"><h3>Laboratório</h3><b>Hands-On</b><p>Validador interativo de JSON.</p></div>
+</div>
+</section>
+
+<!-- WEBSERVICES -->
+<section class="slide">
+<div class="num">PARTE 1</div>
+<h2>O que é um WebService? (API)</h2>
+<p>Imagine o <strong>Garçom</strong> de um restaurante. O Cliente (Front-End) não vai à cozinha (Banco de Dados). Ele chama o Garçom (API), que busca a informação e a devolve no formato correto.</p>
+<ul>
+<li><strong>Agnóstico:</strong> Um jogo em <i>Unreal (C++)</i> consome a mesma API que um App em <i>Kotlin</i>.</li>
+<li><strong>Dados, não telas:</strong> O Back-End não devolve botões e cores, apenas dados brutos.</li>
+<li><strong>Reutilizável:</strong> A mesma API alimenta o Ranking do site, o Launcher e o Jogo.</li>
+</ul>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 1</div>
+<h2>O Ciclo Requisição & Resposta</h2>
+<div class="flow"><div class="node">Mobile (Kotlin)<small>Cliente</small></div><div class="line"><i></i><i class="r"></i></div><div class="node">Node.js (TS)<small>Servidor Aetheria</small></div></div>
+<div class="cols">
+<div class="card"><h3>Request (O Pedido)</h3><pre style="color:#38bdf8">GET /jogadores/arthas HTTP/1.1
+Host: api.aetheria.com
+Authorization: Bearer xyz123
+Accept: application/json</pre></div>
+<div class="card"><h3>Response (A Entrega)</h3><pre style="color:#10b981">HTTP/1.1 200 OK
+Content-Type: application/json
+
+{ "level": 50, "classe": "Mago" }</pre></div>
+</div>
+</section>
+
+<!-- HTTP METODOS -->
+<section class="slide">
+<div class="num">PARTE 2</div>
+<h2>Verbos HTTP (As Ações do CRUD)</h2>
+<table>
+<tr><th>Método</th><th>Ação no Banco</th><th>No Aetheria Engine</th><th>Idempotente?</th></tr>
+<tr><td><span class="tag b">GET</span></td><td>Read (Ler)</td><td>Buscar os status de um Guerreiro.</td><td>Sim</td></tr>
+<tr><td><span class="tag g">POST</span></td><td>Create (Criar)</td><td>Registrar um novo usuário no jogo.</td><td>Não</td></tr>
+<tr><td><span class="tag y">PUT</span></td><td>Update (Substituir)</td><td>Salvar o progresso inteiro do char.</td><td>Sim</td></tr>
+<tr><td><span class="tag p">PATCH</span></td><td>Update (Parcial)</td><td>Apenas alterar o HP após um hit.</td><td>Depende</td></tr>
+<tr><td><span class="tag r">DELETE</span></td><td>Delete (Remover)</td><td>Deletar um personagem da conta.</td><td>Sim</td></tr>
+</table>
+<p class="mut" style="margin-top:12px">*Idempotente = Chamar 1.000 vezes causa o mesmo efeito no banco que chamar 1 vez.</p>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 2</div>
+<h2>HTTP Status Codes (O Destino)</h2>
+<p>O Servidor responde não só com dados, mas com um número universal que indica o que rolou.</p>
+<div class="grid">
+<div class="card"><span class="tag g">2xx Sucesso</span><p><code>200</code> OK (Deu bom)<br><code>201</code> Created (Criado com sucesso)</p></div>
+<div class="card"><span class="tag b">3xx Cache/Redirect</span><p><code>301</code> Moved Permanently<br><code>304</code> Not Modified (Usa o Cache local)</p></div>
+<div class="card"><span class="tag y">4xx Erro do Cliente</span><p><code>400</code> Bad Request (Faltou dado)<br><code>401</code> Unauthorized (Sem token)<br><code>404</code> Not Found (Jogador não existe)</p></div>
+<div class="card"><span class="tag r">5xx Erro do Servidor</span><p><code>500</code> Internal Server (O código quebrou)<br><code>503</code> Service Unavailable (Caiu)</p></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 3</div>
+<h2>REST (A Regra de Ouro)</h2>
+<p>REST <i>(Representational State Transfer)</i> não é um código, é um <strong>estilo de arquitetura</strong>. APIs RESTful usam o HTTP de forma semântica.</p>
+<div class="cols">
+<div class="card" style="border-color:#10b981"><h3>✅ O Jeito RESTful (Certo)</h3>
+<p>Usar substantivos no plural e deixar a ação para o Verbo HTTP.</p>
+<ul><li><code>GET /guildas/15/membros</code></li><li><code>POST /jogadores</code></li><li><code>DELETE /inventario/item/99</code></li></ul>
+</div>
+<div class="card" style="border-color:#ef4444"><h3>❌ O Jeito RPC (Errado)</h3>
+<p>Colocar verbos e ações diretas na URL.</p>
+<ul><li><code>GET /pegarMembrosDaGuilda15</code></li><li><code>POST /criarNovoJogador</code></li><li><code>GET /deletarItem?id=99</code> (Destrutivo via GET!)</li></ul>
+</div>
+</div>
+</section>
+
+<!-- JSON -->
+<section class="slide">
+<div class="num">PARTE 4</div>
+<h2>O Grande Problema: A Língua</h2>
+<p>Se o nosso servidor Aetheria usa <strong>TypeScript</strong>, e o jogador está no celular usando <strong>Kotlin</strong>... Como eles enviam uma Guilda inteira pela internet?</p>
+<p style="color:var(--ac); font-weight:bold; font-size:1.5rem">Eles precisam de um idioma textual neutro.</p>
+<div class="cols" style="margin-top:20px">
+<div><h3>❌ XML (O Passado)</h3><pre>&lt;jogador&gt;
+  &lt;nome&gt;Faker&lt;/nome&gt;
+  &lt;level&gt;50&lt;/level&gt;
+&lt;/jogador&gt;</pre><p class="mut">Muito pesado. Repete tags sem parar.</p></div>
+<div><h3>✅ JSON (O Presente)</h3><pre>{
+  "nome": "Faker",
+  "level": 50
+}</pre><p class="mut">Leve, legível e nativo da Web.</p></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 4</div>
+<h2>As Rígidas Regras do JSON</h2>
+<div class="cols">
+<div><p>O JSON é rigoroso para que qualquer máquina do planeta consiga lê-lo sem travar.</p>
+<ul>
+<li><strong>Aspas Duplas:</strong> A chave TEM que ter aspas duplas. (<code>"hp": 100</code>).</li>
+<li><strong>Tipos Suportados:</strong> String, Number, Boolean, Null, Arrays <code>[]</code>, Objetos <code>{}</code>.</li>
+<li><strong>Proibições:</strong> Sem funções. Sem comentários. Sem aspas simples. Sem `undefined`. Sem vírgula sobrando no final.</li>
+</ul></div>
+<div class="card">
+<h3 style="color:#ef4444">TS Objeto vs JSON</h3>
+<pre style="margin-bottom:10px">const ts = {
+  nome: 'Ana',
+  atacar: () => {}
+}</pre>
+<pre>{
+  "nome": "Ana"
+}</pre>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 4</div>
+<h2>Coleções (Arrays)</h2>
+<div class="cols">
+<div><p>Ao fazer um <code>GET /ranking</code>, a API responde com uma <strong>Coleção</strong> de Objetos JSON. O array `[` abraça múltiplos `{ }`.</p>
+<p>Geralmente, APIs modernas envelopam os dados em metadados como paginação e total de itens.</p></div>
+<pre>{
+  "page": 1,
+  "totalPages": 5,
+  "data": [
+    { "id": 1, "nick": "Faker", "elo": "Challenger" },
+    { "id": 2, "nick": "Jukes", "elo": "Grandmaster" }
+  ]
+}</pre>
+</div>
+</section>
+
+<section class="slide">
+<div class="num">PARTE 4</div>
+<h2>Node.js: Serialização (O Embarque)</h2>
+<div class="cols">
+<div><p>Como pegamos a Classe viva da memória e transformamos no texto JSON?</p>
+<div class="card"><pre>const textoJSON = JSON.stringify(guilda);</pre></div>
+<p class="mut" style="margin-top:10px">O <code>stringify</code> limpa métodos e garante aspas duplas. Prontinho para voar pela rede.</p>
+</div>
+<div><p>Como pegamos um pacote de texto da rede e trazemos de volta à vida?</p>
+<div class="card"><pre>try {
+  const guilda = JSON.parse(textoJSON);
+} catch(e) {
+  console.log("Erro de Sintaxe. Arquivo corrompido!");
+}</pre></div>
+<p class="mut" style="margin-top:10px">O <code>parse</code> é a operação mais rápida do V8, mas <strong>sempre</strong> precisa de Try/Catch.</p>
+</div>
+</div>
+</section>
+
+<!-- LABORATÓRIO INTERATIVO -->
+<section class="slide">
+<div class="num">LABORATÓRIO HANDS-ON</div>
+<h2>O Caçador de Erros JSON</h2>
+<p class="mut">O código abaixo simula um pacote interceptado na rede. Modifique o texto e veja o motor de renderização validar as regras JSON ao vivo!</p>
+<textarea id="jin" spellcheck="false">{
+  "id": 9012,
+  "nome": "Arthas",
+  "classes": ["Paladino", "Cavaleiro da Morte"],
+  "vivo": false
+}</textarea>
+<div class="row">
+    <div id="jout" class="stat"></div>
+    <button id="jfmt" type="button">Beautify (Formatar)</button>
+    <button id="jmin" type="button">Minificar (Compactar)</button>
+</div>
+</section>
+
+<section class="slide">
+<div class="num">ENCERRAMENTO</div>
+<h2>O Resumo do Loot</h2>
+<div class="grid">
+<div class="card"><h3>WebServices & API</h3><p>O Garçom universal que liga Front e Back via internet.</p></div>
+<div class="card"><h3>HTTP & REST</h3><p>A arquitetura que usa URLs para substantivos e GET/POST/PUT/DELETE para verbos.</p></div>
+<div class="card"><h3>O Formato JSON</h3><p>String padronizada que substituiu o pesado XML.</p></div>
+<div class="card"><h3>Try/Catch</h3><p>A blindagem obrigatória ao rodar <code>JSON.parse()</code>.</p></div>
+</div>
+</section>
+
+<!-- CONTROLES -->
+<div class="nav"><button id="prev" type="button">Anterior</button><span id="count"></span><button id="next" type="button">Próximo</button></div>
+
+<script>
+// Motor da Apresentação Slide a Slide
+var slides=[].slice.call(document.querySelectorAll('.slide')),i=0;
+var root=document.documentElement,tb=document.getElementById('theme');
+
+let isDark = localStorage.getItem('aetheria_theme') !== 'light';
+root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
+function label(){tb.textContent=isDark?'Modo Claro':'Modo Escuro'}
+tb.onclick=function(){
+    isDark=!isDark;
+    localStorage.setItem('aetheria_theme', isDark ? 'dark' : 'light');
+    root.setAttribute('data-theme',isDark?'dark':'light');
+    label();
+};
+label();
+
+function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
+    document.getElementById('count').textContent=(i+1)+' / '+slides.length;
+    document.getElementById('prog').style.width=((i+1)/slides.length*100)+'%';
+}
+document.getElementById('prev').onclick=function(){show(i-1)};
+document.getElementById('next').onclick=function(){show(i+1)};
+document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')show(i+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp')show(i-1);
+});
+
+document.querySelectorAll('[data-go]').forEach(function(c){c.onclick=function(){show(+c.dataset.go)}});
+
+// Motor Interativo do JSON
+(function(){
+    var t=document.getElementById('jin'),o=document.getElementById('jout');
+    function chk(){
+        if(t.value.trim() === '') {
+            o.className='stat e';o.textContent='Vazio';return false;
+        }
+        try{
+            JSON.parse(t.value);
+            o.className='stat v';o.textContent='✅ JSON Válido!';
+            t.style.borderColor = '#10b981';
+            return true;
+        }catch(e){
+            o.className='stat e';o.textContent='❌ Erro de Sintaxe: '+e.message;
+            t.style.borderColor = '#ef4444';
+            return false;
+        }
+    }
+    t.oninput=chk;
+    document.getElementById('jfmt').onclick=function(){if(chk())t.value=JSON.stringify(JSON.parse(t.value),null,2)};
+    document.getElementById('jmin').onclick=function(){if(chk())t.value=JSON.stringify(JSON.parse(t.value))};
+    chk();
+})();
+
+show(0);
+</script>
+</body>
+</html>
